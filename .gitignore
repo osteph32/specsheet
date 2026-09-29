@@ -37,3 +37,7 @@ coverage/
 
 # Docker
 *.pid
+
+# Private project planning documentation
+docs/SPECSHEET_V1_SPEC.md
+docs/V1_CHECKLIST.md
