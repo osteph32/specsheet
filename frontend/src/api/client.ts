@@ -20,5 +20,10 @@ export async function apiRequest<T>(
     throw new Error(`API request failed with status ${response.status}.`);
   }
 
+  // Successful DELETE/logout-style endpoints may intentionally return no body.
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
