@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useAuth } from "../features/auth/useAuth";
@@ -13,11 +12,8 @@ vi.mock("../features/auth/useAuth", () => ({
 const mockedUseAuth = vi.mocked(useAuth);
 
 describe("DashboardPage", () => {
-  const logout = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-    logout.mockResolvedValue(undefined);
 
     mockedUseAuth.mockReturnValue({
       user: {
@@ -30,40 +26,40 @@ describe("DashboardPage", () => {
       isInitializing: false,
       login: vi.fn(),
       register: vi.fn(),
-      logout,
+      logout: vi.fn(),
     });
   });
 
-  it("displays the authenticated user", () => {
+  it("welcomes the authenticated user", () => {
     render(
       <MemoryRouter>
         <DashboardPage />
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("testuser")).toBeInTheDocument();
-    expect(screen.getByText("test@example.com")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Welcome back, testuser",
+      }),
+    ).toBeInTheDocument();
   });
 
-  it("logs out and navigates to login", async () => {
-    const user = userEvent.setup();
-
+  it("shows empty dashboard statistics", () => {
     render(
-      <MemoryRouter initialEntries={["/dashboard"]}>
-        <Routes>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/login" element={<div>Login page</div>} />
-        </Routes>
+      <MemoryRouter>
+        <DashboardPage />
       </MemoryRouter>,
     );
 
-    await user.click(
-      screen.getByRole("button", {
-        name: /log out/i,
-      }),
-    );
+    expect(screen.getByText("Vehicles")).toBeInTheDocument();
+    expect(screen.getByText("Maintenance due")).toBeInTheDocument();
+    expect(screen.getByText("Active builds")).toBeInTheDocument();
+    expect(screen.getByText("Total invested")).toBeInTheDocument();
 
-    expect(logout).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Login page")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Your garage is empty",
+      }),
+    ).toBeInTheDocument();
   });
 });

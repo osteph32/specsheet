@@ -1,53 +1,53 @@
-import { useNavigate } from "react-router-dom";
-
 import { useAuth } from "../features/auth/useAuth";
 
 export function DashboardPage() {
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  async function handleLogout(): Promise<void> {
-    await logout();
-    navigate("/login", { replace: true });
-  }
+  const { user } = useAuth();
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-6 py-12 text-zinc-100">
-      <div className="mx-auto max-w-6xl">
-        <header className="flex items-center justify-between border-b border-zinc-800 pb-6">
-          <div>
-            <p className="text-sm text-zinc-500">SpecSheet</p>
+    <div className="mx-auto max-w-7xl px-6 py-8">
+      <div>
+        <p className="text-sm font-medium text-zinc-500">Dashboard</p>
 
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight">
-              Dashboard
-            </h1>
-          </div>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+          Welcome back, {user?.username}
+        </h1>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium transition hover:bg-zinc-900"
-          >
-            Log out
-          </button>
-        </header>
-
-        <section className="mt-10">
-          <p className="text-sm text-zinc-500">Signed in as</p>
-
-          <p className="mt-2 text-xl font-medium">{user?.username}</p>
-
-          <p className="mt-1 text-zinc-400">{user?.email}</p>
-        </section>
-
-        <section className="mt-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="text-lg font-medium">Your garage is ready.</h2>
-
-          <p className="mt-2 text-zinc-400">
-            Vehicle management will be added in the next development phase.
-          </p>
-        </section>
+        <p className="mt-2 text-zinc-400">
+          Here's an overview of your vehicles and ownership activity.
+        </p>
       </div>
-    </main>
+
+      <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <DashboardStat label="Vehicles" value="0" />
+        <DashboardStat label="Maintenance due" value="0" />
+        <DashboardStat label="Active builds" value="0" />
+        <DashboardStat label="Total invested" value="$0" />
+      </section>
+
+      <section className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+        <h2 className="text-lg font-medium">Your garage is empty</h2>
+
+        <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
+          Vehicle management will be added in the next development phase. Your
+          vehicles, maintenance activity, builds, and ownership costs will
+          appear here.
+        </p>
+      </section>
+    </div>
+  );
+}
+
+interface DashboardStatProps {
+  label: string;
+  value: string;
+}
+
+function DashboardStat({ label, value }: DashboardStatProps) {
+  return (
+    <article className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
+      <p className="text-sm text-zinc-500">{label}</p>
+
+      <p className="mt-2 text-2xl font-semibold tracking-tight">{value}</p>
+    </article>
   );
 }
