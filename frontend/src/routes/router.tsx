@@ -10,6 +10,7 @@ import { BuildsPage } from "../pages/BuildsPage";
 import { ExpensesPage } from "../pages/ExpensesPage";
 import { GaragePage } from "../pages/GaragePage";
 import { MaintenancePage } from "../pages/MaintenancePage";
+import { AddVehiclePage } from "../pages/AddVehiclePage";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
           {
             path: "/analytics",
             element: <AnalyticsPage />,
+          },
+          {
+            path: "/garage/new",
+            element: <AddVehiclePage />,
           },
         ],
       },
