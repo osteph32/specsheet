@@ -33,3 +33,28 @@ export function deleteVehicle(
     },
   });
 }
+
+export function getVehicle(
+  accessToken: string,
+  vehicleId: number,
+): Promise<Vehicle> {
+  return apiRequest<Vehicle>(`/api/vehicles/${vehicleId}/`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
+export function updateVehicle(
+  accessToken: string,
+  vehicleId: number,
+  payload: CreateVehiclePayload,
+): Promise<Vehicle> {
+  return apiRequest<Vehicle>(`/api/vehicles/${vehicleId}/`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+}

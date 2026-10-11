@@ -4,15 +4,23 @@ const currentYear = new Date().getFullYear();
 
 export const vehicleSchema = z.object({
   vehicle_type: z.enum(["car", "motorcycle", "truck"]),
+
+  status: z.enum(["active", "stored", "sold", "archived"]),
+
   year: z.coerce
     .number()
     .int()
     .min(1886, "Enter a valid vehicle year.")
     .max(currentYear + 1, `Year cannot be later than ${currentYear + 1}.`),
+
   make: z.string().trim().min(1, "Make is required."),
+
   model: z.string().trim().min(1, "Model is required."),
+
   trim: z.string().trim().optional(),
+
   nickname: z.string().trim().optional(),
+
   vin: z
     .string()
     .trim()
@@ -20,10 +28,27 @@ export const vehicleSchema = z.object({
       (value) => value === "" || value.length === 17,
       "VIN must contain exactly 17 characters.",
     ),
+
   current_mileage: z.coerce
     .number()
     .int()
     .min(0, "Mileage cannot be negative."),
+
+  purchase_date: z.string().optional(),
+
+  purchase_price: z
+    .union([
+      z.literal(""),
+      z.coerce.number().min(0, "Purchase price cannot be negative."),
+    ])
+    .optional(),
+
+  purchase_mileage: z
+    .union([
+      z.literal(""),
+      z.coerce.number().int().min(0, "Purchase mileage cannot be negative."),
+    ])
+    .optional(),
 });
 
 export type VehicleFormInput = z.input<typeof vehicleSchema>;

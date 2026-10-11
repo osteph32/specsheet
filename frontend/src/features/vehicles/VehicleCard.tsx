@@ -4,6 +4,7 @@ import { useAuth } from "../auth/useAuth";
 import { deleteVehicle } from "./api";
 import type { Vehicle } from "./types";
 import { vehicleQueryKey } from "./useVehicles";
+import { Link } from "react-router-dom";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -45,11 +46,24 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
     <article className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-            {vehicle.vehicle_type}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+              {vehicle.vehicle_type}
+            </p>
 
-          <h2 className="mt-2 text-xl font-semibold">{displayName}</h2>
+            <span className="rounded-full border border-zinc-700 px-2 py-0.5 text-xs capitalize text-zinc-300">
+              {vehicle.status}
+            </span>
+          </div>
+
+          <h2 className="mt-2 text-xl font-semibold">
+            <Link
+              to={`/garage/${vehicle.id}`}
+              className="transition hover:text-white hover:underline"
+            >
+              {displayName}
+            </Link>
+          </h2>
 
           {vehicle.nickname && (
             <p className="mt-1 text-sm text-zinc-400">

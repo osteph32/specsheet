@@ -13,6 +13,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "vehicle_type",
+            "status",
             "year",
             "make",
             "model",
@@ -20,6 +21,9 @@ class VehicleSerializer(serializers.ModelSerializer):
             "nickname",
             "vin",
             "current_mileage",
+            "purchase_date",
+            "purchase_price",
+            "purchase_mileage",
             "created_at",
             "updated_at",
         )

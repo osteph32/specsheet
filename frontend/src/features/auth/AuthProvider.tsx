@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -29,8 +30,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const hasRestoredSession = useRef(false);
 
   useEffect(() => {
+    if (hasRestoredSession.current) {
+      return;
+    }
+
+    hasRestoredSession.current = true;
+
     async function restoreSession(): Promise<void> {
       const storedRefreshToken = getRefreshToken();
 

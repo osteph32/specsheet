@@ -11,6 +11,8 @@ import { ExpensesPage } from "../pages/ExpensesPage";
 import { GaragePage } from "../pages/GaragePage";
 import { MaintenancePage } from "../pages/MaintenancePage";
 import { AddVehiclePage } from "../pages/AddVehiclePage";
+import { VehicleDetailPage } from "../pages/VehicleDetailPage";
+import { EditVehiclePage } from "../pages/EditVehiclePage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +42,18 @@ export const router = createBrowserRouter([
             element: <GaragePage />,
           },
           {
+            path: "/garage/new",
+            element: <AddVehiclePage />,
+          },
+          {
+            path: "/garage/:vehicleId",
+            element: <VehicleDetailPage />,
+          },
+          {
+            path: "/garage/:vehicleId/edit",
+            element: <EditVehiclePage />,
+          },
+          {
             path: "/maintenance",
             element: <MaintenancePage />,
           },
@@ -54,10 +68,6 @@ export const router = createBrowserRouter([
           {
             path: "/analytics",
             element: <AnalyticsPage />,
-          },
-          {
-            path: "/garage/new",
-            element: <AddVehiclePage />,
           },
         ],
       },

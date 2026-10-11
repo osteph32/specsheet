@@ -268,3 +268,127 @@ def test_vehicle_response_does_not_expose_owner():
 
     assert response.status_code == 200
     assert "owner" not in response.json()[0]
+
+
+@pytest.mark.django_db
+def test_vehicle_defaults_to_active_status():
+    user = User.objects.create_user(
+        username="owner",
+        password="strongpassword123",
+    )
+
+    client = authenticated_client(user)
+
+    response = client.post(
+        "/api/vehicles/",
+        {
+            "vehicle_type": "car",
+            "year": 2020,
+            "make": "Toyota",
+            "model": "Supra",
+            "current_mileage": 10000,
+        },
+        format="json",
+    )
+
+    assert response.status_code == 201
+    assert response.json()["status"] == "active"
+
+
+@pytest.mark.django_db
+def test_user_can_save_purchase_information():
+    user = User.objects.create_user(
+        username="owner",
+        password="strongpassword123",
+    )
+
+    client = authenticated_client(user)
+
+    response = client.post(
+        "/api/vehicles/",
+        {
+            "vehicle_type": "motorcycle",
+            "status": "active",
+            "year": 2006,
+            "make": "Honda",
+            "model": "CBR600RR",
+            "current_mileage": 18000,
+            "purchase_date": "2026-09-01",
+            "purchase_price": "4500.00",
+            "purchase_mileage": 17999,
+        },
+        format="json",
+    )
+
+    assert response.status_code == 201
+
+    vehicle = Vehicle.objects.get()
+
+    assert str(vehicle.purchase_price) == "4500.00"
+    assert vehicle.purchase_mileage == 17999
+
+
+@pytest.mark.django_db
+def test_vehicle_list_can_filter_by_status():
+    user = User.objects.create_user(
+        username="owner",
+        password="strongpassword123",
+    )
+
+    Vehicle.objects.create(
+        owner=user,
+        vehicle_type=Vehicle.VehicleType.CAR,
+        status=Vehicle.VehicleStatus.ACTIVE,
+        year=2020,
+        make="Toyota",
+        model="Supra",
+    )
+
+    Vehicle.objects.create(
+        owner=user,
+        vehicle_type=Vehicle.VehicleType.TRUCK,
+        status=Vehicle.VehicleStatus.SOLD,
+        year=2021,
+        make="Ford",
+        model="F-150",
+    )
+
+    client = authenticated_client(user)
+
+    response = client.get("/api/vehicles/?status=active")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["model"] == "Supra"
+
+
+@pytest.mark.django_db
+def test_vehicle_list_can_filter_by_type():
+    user = User.objects.create_user(
+        username="owner",
+        password="strongpassword123",
+    )
+
+    Vehicle.objects.create(
+        owner=user,
+        vehicle_type=Vehicle.VehicleType.MOTORCYCLE,
+        year=2006,
+        make="Honda",
+        model="CBR600RR",
+    )
+
+    Vehicle.objects.create(
+        owner=user,
+        vehicle_type=Vehicle.VehicleType.CAR,
+        year=2020,
+        make="Toyota",
+        model="Supra",
+    )
+
+    client = authenticated_client(user)
+
+    response = client.get("/api/vehicles/?vehicle_type=motorcycle")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["model"] == "CBR600RR"

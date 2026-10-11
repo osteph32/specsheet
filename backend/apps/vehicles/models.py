@@ -11,6 +11,12 @@ class Vehicle(models.Model):
         MOTORCYCLE = "motorcycle", "Motorcycle"
         TRUCK = "truck", "Truck"
 
+    class VehicleStatus(models.TextChoices):
+        ACTIVE = "active", "Active"
+        STORED = "stored", "Stored"
+        SOLD = "sold", "Sold"
+        ARCHIVED = "archived", "Archived"
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -20,6 +26,12 @@ class Vehicle(models.Model):
     vehicle_type = models.CharField(
         max_length=20,
         choices=VehicleType.choices,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=VehicleStatus.choices,
+        default=VehicleStatus.ACTIVE,
     )
 
     year = models.PositiveSmallIntegerField()
@@ -39,6 +51,25 @@ class Vehicle(models.Model):
 
     current_mileage = models.PositiveIntegerField(
         default=0,
+        validators=[MinValueValidator(0)],
+    )
+
+    purchase_date = models.DateField(
+        null=True,
+        blank=True,
+    )
+
+    purchase_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0)],
+    )
+
+    purchase_mileage = models.PositiveIntegerField(
+        null=True,
+        blank=True,
         validators=[MinValueValidator(0)],
     )
 
