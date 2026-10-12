@@ -34,3 +34,12 @@ export interface CreateVehiclePayload {
   purchase_price?: number | null;
   purchase_mileage?: number | null;
 }
+
+export interface DecodedVehicle {
+  vin: string;
+  year: number | null;
+  make: string;
+  model: string;
+  trim: string;
+  vehicle_type: VehicleType | null;
+}

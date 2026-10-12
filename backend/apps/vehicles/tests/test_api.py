@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.vehicles.models import Vehicle
+from apps.vehicles.services import DecodedVehicle
 
 User = get_user_model()
 
@@ -392,3 +395,52 @@ def test_vehicle_list_can_filter_by_type():
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]["model"] == "CBR600RR"
+
+
+@pytest.mark.django_db
+@patch("apps.vehicles.views.decode_vin")
+def test_authenticated_user_can_decode_vin(
+    mock_decode_vin,
+):
+    user = User.objects.create_user(
+        username="owner",
+        password="strongpassword123",
+    )
+
+    client = authenticated_client(user)
+
+    mock_decode_vin.return_value = DecodedVehicle(
+        vin="1HGCM82633A004352",
+        year=2003,
+        make="HONDA",
+        model="Accord",
+        trim="EX",
+        vehicle_type="car",
+    )
+
+    response = client.post(
+        "/api/vehicles/decode-vin/",
+        {
+            "vin": "1HGCM82633A004352",
+        },
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.json()["make"] == "HONDA"
+    assert response.json()["model"] == "Accord"
+
+
+@pytest.mark.django_db
+def test_decode_vin_requires_authentication():
+    client = APIClient()
+
+    response = client.post(
+        "/api/vehicles/decode-vin/",
+        {
+            "vin": "1HGCM82633A004352",
+        },
+        format="json",
+    )
+
+    assert response.status_code == 401

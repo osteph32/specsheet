@@ -1,5 +1,5 @@
 import { apiRequest } from "../../api/client";
-import type { CreateVehiclePayload, Vehicle } from "./types";
+import type { CreateVehiclePayload, DecodedVehicle, Vehicle } from "./types";
 
 export function getVehicles(accessToken: string): Promise<Vehicle[]> {
   return apiRequest<Vehicle[]>("/api/vehicles/", {
@@ -56,5 +56,20 @@ export function updateVehicle(
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(payload),
+  });
+}
+
+export function decodeVin(
+  accessToken: string,
+  vin: string,
+): Promise<DecodedVehicle> {
+  return apiRequest<DecodedVehicle>("/api/vehicles/decode-vin/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      vin,
+    }),
   });
 }

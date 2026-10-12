@@ -1,11 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type UseFormRegisterReturn } from "react-hook-form";
+import { useForm, useWatch, type UseFormRegisterReturn } from "react-hook-form";
 
 import {
   vehicleSchema,
   type VehicleFormInput,
   type VehicleFormValues,
 } from "./schemas";
+
+import { VinDecoder } from "./VinDecoder";
 
 interface VehicleFormProps {
   defaultValues?: Partial<VehicleFormInput>;
@@ -29,6 +31,8 @@ export function VehicleForm({
   const {
     register,
     handleSubmit,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<VehicleFormInput, unknown, VehicleFormValues>({
     resolver: zodResolver(vehicleSchema),
@@ -45,6 +49,12 @@ export function VehicleForm({
       ...defaultValues,
     },
   });
+
+  const vin =
+    useWatch({
+      control,
+      name: "vin",
+    }) ?? "";
 
   return (
     <form
@@ -139,6 +149,31 @@ export function VehicleForm({
         label="VIN (optional)"
         error={errors.vin?.message}
         registration={register("vin")}
+      />
+
+      <VinDecoder
+        vin={vin}
+        onApply={(decoded) => {
+          if (decoded.year !== null) {
+            setValue("year", decoded.year);
+          }
+
+          if (decoded.make) {
+            setValue("make", decoded.make);
+          }
+
+          if (decoded.model) {
+            setValue("model", decoded.model);
+          }
+
+          if (decoded.trim) {
+            setValue("trim", decoded.trim);
+          }
+
+          if (decoded.vehicle_type) {
+            setValue("vehicle_type", decoded.vehicle_type);
+          }
+        }}
       />
 
       <div className="border-t border-zinc-800 pt-6">

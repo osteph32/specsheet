@@ -58,3 +58,20 @@ class VehicleSerializer(serializers.ModelSerializer):
             )
 
         return vin
+
+
+class VinDecodeSerializer(serializers.Serializer):
+    vin = serializers.CharField(
+        min_length=17,
+        max_length=17,
+    )
+
+    def validate_vin(self, value: str) -> str:
+        normalized_vin = value.strip().upper()
+
+        invalid_characters = {"I", "O", "Q"}
+
+        if any(character in invalid_characters for character in normalized_vin):
+            raise serializers.ValidationError("VIN cannot contain I, O, or Q.")
+
+        return normalized_vin
